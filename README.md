@@ -1,2 +1,3 @@
 # log4javamail
 a log redirect for javamail to slf4j
+javamail将debug日志默认输出到System.out，而很多应用程序希望日志能统一由logback,log4j来管理，因此此工具帮助有这类需求的程序提供一种方法，透过slf4j将日志统一管理起来。此工具利用了javamail提供的session.setDebutOut方法，将日志输出到一个ByteArrayOutputStream对象，再在适当的时机将收集到的字节组装成日志字符串，输出到slf4j的logger对象，从而实现了由slf4j来统一管理日志。
