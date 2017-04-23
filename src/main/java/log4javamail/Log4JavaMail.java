@@ -26,6 +26,7 @@ public class Log4JavaMail extends PrintStream {
 	private Logger actualLog;
 	private boolean trace;
 	private String charset;
+	private boolean hitData;
 
 	public String getCharset() {
 		return charset;
@@ -73,45 +74,31 @@ public class Log4JavaMail extends PrintStream {
 		}
 		try {
 			String msg = new String(bos.toByteArray(), charset);
-
-			if (!isTrace()) {
-				//由于邮件内容过多，只输出邮件的信头部分，如果需要输出所有内容设置trace为true
-				msg = filterHeader(msg);
-			}
-
 			//debug输出会加上换行符，所以去掉javamail加上的换行符。
 			if (msg.endsWith("\r\n")) {
 				msg = msg.substring(0, msg.length() - 2);
 			}
-			actualLog.debug(msg);
+
+			if (msg.equals("DATA")) {
+				hitData = true;
+			} else if (msg.equals(".\r\n")) {
+				hitData = false;
+			}
+
+			if (hitData) {
+				//data阶段输出邮件内容,设置为trace级别.
+				actualLog.trace(msg);
+			} else {
+				actualLog.debug(msg);
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		bos.reset();
 	}
 
-	/**
-	 * 判断信头的方式较为简单，可根据自己的实际情况进行修订。
-	 * 
-	 * @param msg
-	 * @return
-	 */
-	private String filterHeader(String msg) {
-		int pos = msg.indexOf("Content-Type");
-		if (pos > -1) {
-			msg = msg.substring(0, pos);
-		} else {
-			pos = msg.indexOf("MIME-Version");
-			if (pos > -1) {
-				msg = msg.substring(0, pos);
-			}
-		}
-		return msg;
-	}
-
 	@Override
 	public void println(String x) {
 		actualLog.debug(x);
 	}
-
 }
