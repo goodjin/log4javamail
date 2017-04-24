@@ -24,7 +24,6 @@ public class Log4JavaMail extends PrintStream {
 	private static byte[] CRLF = new byte[] { 13, 10 };
 	private ByteArrayOutputStream bos = new ByteArrayOutputStream();
 	private Logger actualLog;
-	private boolean trace;
 	private String charset;
 	private boolean hitData;
 
@@ -45,14 +44,6 @@ public class Log4JavaMail extends PrintStream {
 		super(System.out);
 		this.actualLog = log;
 		this.charset = charset;
-	}
-
-	public boolean isTrace() {
-		return trace;
-	}
-
-	public void setTrace(boolean trace) {
-		this.trace = trace;
 	}
 
 	@Override
